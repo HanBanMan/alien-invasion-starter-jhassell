@@ -1,15 +1,19 @@
 import pygame
+from settings import Settings
+from ship import Ship
 
 # Initialize Pygame
 pygame.init()
 
-# Set up the display
-WIDTH = 800
-HEIGHT = 600
-BG_COLOR = (186, 191, 148)  # HEX #BABF94
+# Create a settings object
+settings = Settings()
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+# Set up the display
+screen = pygame.display.set_mode((settings.screen_width, settings.screen_height))
 pygame.display.set_caption("Alien Invasion")
+
+# Create the ship
+ship = Ship(screen, settings)
 
 # Game loop
 running = True
@@ -23,7 +27,10 @@ while running:
             running = False
     
     # Fill the screen with background color
-    screen.fill(BG_COLOR)
+    screen.fill(settings.bg_color)
+    
+    # Draw the ship
+    ship.blitme()
     
     # Update the display
     pygame.display.flip()
