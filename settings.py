@@ -6,14 +6,14 @@ class Settings:
         # Screen settings
         self.screen_width = 800
         self.screen_height = 600
-        self.bg_color = (186, 191, 148)  # HEX #BABF94
+        self.bg_color = (30, 60, 40)  # Chalkboard green
         
         # Ship settings
         self.ship_speed = 5
         
         # Bullet settings
         self.bullet_speed = 7
-        self.bullet_width = 3
-        self.bullet_height = 15
-        self.bullet_color = (60, 60, 60)
+        self.bullet_width = 4
+        self.bullet_height = 16
+        self.bullet_color = (240, 240, 225)
         self.bullet_fire_rate = 300  # Milliseconds between bullet firings

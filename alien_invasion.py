@@ -1,4 +1,5 @@
 import pygame
+import random
 from pygame.sprite import Group
 from types import SimpleNamespace
 from settings import Settings
@@ -42,21 +43,38 @@ def _update_bullets(bullets):
 
 def _update_screen(screen, settings, ship, bullets):
     """Draw all game objects and update the display."""
-    # Fill the screen with background color
+    # Fill the screen with chalkboard background color
     screen.fill(settings.bg_color)
-    
+
+    # Add a subtle chalkboard texture overlay
+    chalk_overlay = pygame.Surface((settings.screen_width, settings.screen_height), pygame.SRCALPHA)
+    chalk_overlay.fill((0, 0, 0, 0))
+    chalk_line_color = (120, 150, 115, 25)
+    chalk_spot_color = (220, 240, 205, 18)
+
+    for y in range(30, settings.screen_height, 70):
+        pygame.draw.line(chalk_overlay, chalk_line_color, (0, y), (settings.screen_width, y), 1)
+    for _ in range(35):
+        start_x = random.randint(0, settings.screen_width)
+        start_y = random.randint(0, settings.screen_height)
+        end_x = start_x + random.randint(-18, 18)
+        end_y = start_y + random.randint(-4, 4)
+        pygame.draw.line(chalk_overlay, chalk_spot_color, (start_x, start_y), (end_x, end_y), 1)
+        pygame.draw.circle(chalk_overlay, chalk_spot_color, (start_x, start_y), 1)
+    screen.blit(chalk_overlay, (0, 0))
+
     # Draw the ship
     ship.blitme()
-    
+
     # Draw bullets
     for bullet in bullets.sprites():
         bullet.draw_bullet()
-    
+
     # Draw bullet count
     font = pygame.font.Font(None, 36)
-    bullet_count_text = font.render(f"Bullets: {len(bullets)}/3", True, (0, 0, 0))
+    bullet_count_text = font.render(f"Bullets: {len(bullets)}/3", True, (240, 240, 240))
     screen.blit(bullet_count_text, (10, 10))
-    
+
     # Update the display
     pygame.display.flip()
 
