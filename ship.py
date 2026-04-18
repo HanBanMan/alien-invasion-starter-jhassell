@@ -21,6 +21,17 @@ class Ship:
         
         # Start ship at the bottom center of the screen
         self.rect.midbottom = self.screen_rect.midbottom
+        
+        # Movement flags
+        self.moving_right = False
+        self.moving_left = False
+    
+    def update(self):
+        """Update the ship's position and check for boundaries."""
+        if self.moving_right and self.rect.right < self.screen_rect.right:
+            self.rect.x += self.settings.ship_speed
+        if self.moving_left and self.rect.left > 0:
+            self.rect.x -= self.settings.ship_speed
     
     def blitme(self):
         """Draw the ship at its current location."""

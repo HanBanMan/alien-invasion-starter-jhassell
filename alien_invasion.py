@@ -1,6 +1,65 @@
 import pygame
+from pygame.sprite import Group
+from types import SimpleNamespace
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
+
+
+def _check_events(ship, bullets, settings, screen, last_bullet_time):
+    """Handle all events and key presses."""
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            return False, last_bullet_time
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                ship.moving_right = True
+            elif event.key == pygame.K_LEFT:
+                ship.moving_left = True
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_RIGHT:
+                ship.moving_right = False
+            elif event.key == pygame.K_LEFT:
+                ship.moving_left = False
+    
+    # Check for continuous spacebar press with fire rate limit
+    keys = pygame.key.get_pressed()
+    current_time = pygame.time.get_ticks()
+    if keys[pygame.K_SPACE]:
+        if len(bullets) < 3 and (current_time - last_bullet_time) >= settings.bullet_fire_rate:
+            ai_game = SimpleNamespace(screen=screen, settings=settings, ship=ship)
+            new_bullet = Bullet(ai_game)
+            bullets.add(new_bullet)
+            last_bullet_time = current_time
+    
+    return True, last_bullet_time
+
+
+def _update_bullets(bullets):
+    """Update bullet positions and remove bullets that have gone off screen."""
+    bullets.update()
+
+
+def _update_screen(screen, settings, ship, bullets):
+    """Draw all game objects and update the display."""
+    # Fill the screen with background color
+    screen.fill(settings.bg_color)
+    
+    # Draw the ship
+    ship.blitme()
+    
+    # Draw bullets
+    for bullet in bullets.sprites():
+        bullet.draw_bullet()
+    
+    # Draw bullet count
+    font = pygame.font.Font(None, 36)
+    bullet_count_text = font.render(f"Bullets: {len(bullets)}/3", True, (0, 0, 0))
+    screen.blit(bullet_count_text, (10, 10))
+    
+    # Update the display
+    pygame.display.flip()
+
 
 # Initialize Pygame
 pygame.init()
@@ -15,6 +74,12 @@ pygame.display.set_caption("Alien Invasion")
 # Create the ship
 ship = Ship(screen, settings)
 
+# Create a group to store active bullets
+bullets = Group()
+
+# Track bullet fire rate
+last_bullet_time = 0
+
 # Game loop
 running = True
 clock = pygame.time.Clock()
@@ -22,17 +87,16 @@ clock = pygame.time.Clock()
 while running:
     clock.tick(60)
     
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    # Check events
+    running, last_bullet_time = _check_events(ship, bullets, settings, screen, last_bullet_time)
     
-    # Fill the screen with background color
-    screen.fill(settings.bg_color)
+    # Update ship position
+    ship.update()
     
-    # Draw the ship
-    ship.blitme()
+    # Update bullets
+    _update_bullets(bullets)
     
-    # Update the display
-    pygame.display.flip()
+    # Update screen
+    _update_screen(screen, settings, ship, bullets)
 
 pygame.quit()
