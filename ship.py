@@ -1,3 +1,5 @@
+import io
+import os
 import pygame
 
 
@@ -10,48 +12,47 @@ class Ship:
         self.settings = settings
         self.screen_rect = screen.get_rect()
         
-        # Create the ship surface and rect
-        self.image = pygame.Surface((50, 48), pygame.SRCALPHA)
-        self.image.fill((0, 0, 0, 0))  # Transparent background
+        self.image = self._load_ship_image()
+        if self.image is None:
+            self.image = pygame.Surface((56, 58), pygame.SRCALPHA)
+            self.image.fill((0, 0, 0, 0))  # Transparent background
 
-        # Draw a professor-style ship
-        # Hair
-        pygame.draw.rect(self.image, (90, 60, 20), (10, 0, 30, 10))
-        pygame.draw.polygon(self.image, (90, 60, 20), [(10, 6), (8, 12), (42, 12), (40, 6)])
+            # Hair and head
+            pygame.draw.ellipse(self.image, (90, 60, 20), (8, 0, 40, 18))
+            pygame.draw.polygon(self.image, (90, 60, 20), [(8, 10), (4, 18), (12, 16), (20, 26), (36, 26), (44, 16), (52, 18), (48, 10)])
+            pygame.draw.circle(self.image, (245, 224, 198), (28, 24), 10)
+            pygame.draw.circle(self.image, (0, 0, 0), (22, 22), 2)
+            pygame.draw.circle(self.image, (0, 0, 0), (34, 22), 2)
+            pygame.draw.arc(self.image, (140, 80, 40), (20, 24, 16, 10), 3.14, 0, 2)
 
-        # Head
-        pygame.draw.circle(self.image, (245, 224, 198), (25, 16), 8)
-        pygame.draw.circle(self.image, (0, 0, 0), (20, 15), 2)
-        pygame.draw.circle(self.image, (0, 0, 0), (30, 15), 2)
-        pygame.draw.arc(self.image, (140, 80, 40), (18, 16, 14, 10), 3.14, 0, 1)
+            # Glasses
+            pygame.draw.circle(self.image, (0, 0, 0), (22, 22), 5, 1)
+            pygame.draw.circle(self.image, (0, 0, 0), (34, 22), 5, 1)
+            pygame.draw.line(self.image, (0, 0, 0), (24, 22), (32, 22), 2)
+            pygame.draw.circle(self.image, (255, 255, 255, 140), (24, 20), 2)
+            pygame.draw.circle(self.image, (255, 255, 255, 140), (34, 20), 2)
 
-        # Glasses
-        pygame.draw.circle(self.image, (0, 0, 0), (20, 15), 4, 1)
-        pygame.draw.circle(self.image, (0, 0, 0), (30, 15), 4, 1)
-        pygame.draw.line(self.image, (0, 0, 0), (24, 15), (26, 15), 1)
+            # Neck and chest
+            pygame.draw.rect(self.image, (245, 224, 198), (24, 30, 8, 5))
+            pygame.draw.polygon(self.image, (50, 70, 110), [(12, 36), (44, 36), (48, 54), (8, 54)])
+            pygame.draw.polygon(self.image, (70, 90, 150), [(28, 38), (40, 54), (16, 54)])
+            pygame.draw.line(self.image, (220, 220, 220), (28, 38), (28, 54), 2)
 
-        # Neck
-        pygame.draw.rect(self.image, (245, 224, 198), (22, 22, 6, 4))
+            # Shirt and tie
+            pygame.draw.rect(self.image, (230, 230, 230), (24, 36, 8, 12))
+            pygame.draw.polygon(self.image, (180, 20, 20), [(28, 38), (32, 38), (30, 48)])
+            pygame.draw.rect(self.image, (180, 20, 20), (29, 48, 2, 4))
 
-        # Body and jacket
-        pygame.draw.rect(self.image, (50, 60, 120), (10, 26, 30, 18))
-        pygame.draw.polygon(self.image, (70, 70, 160), [(10, 26), (12, 44), (20, 34), (28, 44), (38, 26)])
-        pygame.draw.line(self.image, (200, 200, 200), (25, 26), (25, 42), 2)
+            # Arms and chalk
+            pygame.draw.rect(self.image, (50, 70, 110), (4, 36, 8, 12))
+            pygame.draw.rect(self.image, (50, 70, 110), (44, 36, 8, 12))
+            pygame.draw.rect(self.image, (245, 224, 198), (4, 42, 8, 6))
+            pygame.draw.rect(self.image, (245, 224, 198), (44, 42, 8, 6))
+            pygame.draw.rect(self.image, (250, 250, 220), (48, 46, 2, 6))
 
-        # Shirt and tie
-        pygame.draw.rect(self.image, (220, 220, 220), (20, 28, 10, 12))
-        pygame.draw.polygon(self.image, (180, 20, 20), [(23, 30), (27, 30), (25, 38)])
-        pygame.draw.rect(self.image, (180, 20, 20), (24, 38, 2, 6))
-
-        # Arms
-        pygame.draw.rect(self.image, (50, 60, 120), (6, 28, 4, 12))
-        pygame.draw.rect(self.image, (50, 60, 120), (40, 28, 4, 12))
-        pygame.draw.rect(self.image, (245, 224, 198), (6, 34, 4, 6))
-        pygame.draw.rect(self.image, (245, 224, 198), (40, 34, 4, 6))
-
-        # Legs
-        pygame.draw.rect(self.image, (40, 40, 80), (16, 44, 6, 4))
-        pygame.draw.rect(self.image, (40, 40, 80), (28, 44, 6, 4))
+            # Legs
+            pygame.draw.rect(self.image, (30, 30, 60), (18, 54, 6, 4))
+            pygame.draw.rect(self.image, (30, 30, 60), (32, 54, 6, 4))
 
         self.rect = self.image.get_rect()
         
@@ -61,7 +62,56 @@ class Ship:
         # Movement flags
         self.moving_right = False
         self.moving_left = False
-    
+
+    def _load_ship_image(self):
+        """Try loading a professor ship image if one exists."""
+        current_dir = os.path.dirname(__file__)
+        candidates = [
+            "professor.svg",
+            "professor_ship.svg",
+            "ship.svg",
+            "professor.png",
+            "ship.png",
+        ]
+
+        for filename in candidates:
+            path = os.path.join(current_dir, filename)
+            if not os.path.exists(path):
+                continue
+
+            try:
+                if path.lower().endswith(".svg"):
+                    try:
+                        import cairosvg
+                    except ImportError:
+                        raise RuntimeError(
+                            "SVG support requires cairosvg. Add cairosvg to requirements and install it."
+                        )
+
+                    png_data = cairosvg.svg2png(url=path)
+                    image = pygame.image.load(io.BytesIO(png_data)).convert_alpha()
+                else:
+                    image = pygame.image.load(path).convert_alpha()
+
+                max_size = (56, 58)
+                if image.get_width() > max_size[0] or image.get_height() > max_size[1]:
+                    scale = min(
+                        max_size[0] / image.get_width(),
+                        max_size[1] / image.get_height()
+                    )
+                    new_size = (
+                        max(1, int(image.get_width() * scale)),
+                        max(1, int(image.get_height() * scale))
+                    )
+                    image = pygame.transform.smoothscale(image, new_size)
+
+                return image
+            except Exception as e:
+                print(f"Ship image load failed for {path}: {e}")
+                return None
+
+        return None
+
     def update(self):
         """Update the ship's position and check for boundaries."""
         if self.moving_right and self.rect.right < self.screen_rect.right:
